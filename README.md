@@ -126,57 +126,61 @@ INPUT_EOF
 
 این اسکریپت ابتدا پروسه‌های قدیمی را به طور کامل پاکسازی می‌کند. همچنین زمان هندشیک به ۳۰ ثانیه افزایش یافته است تا تانل فرصت کافی برای باز کردن ۶ کانال موازی در شبکه تحت فیلترینگ شدید را داشته باشد.
 
-> 💡 **راهنمای انتخاب لوکیشن (TARGET_REGION):**
-> در خط اول اسکریپت زیر، متغیر `TARGET_REGION` را برابر با کد دو حرفی کشور مورد نظر خود (با حروف بزرگ) قرار دهید. (`ALL` یعنی اتصال به سریع‌ترین سرور)
-> | کد کشور | نام کشور | | کد کشور | نام کشور |
-> | :---: | :--- | | :---: | :--- |
-> | **`AT`** | اتریش (Austria) | | **`IT`** | ایتالیا (Italy) |
-> | **`BE`** | بلژیک (Belgium) | | **`JP`** | ژاپن (Japan) |
-> | **`CA`** | کانادا (Canada) | | **`NL`** | هلند (Netherlands) |
-> | **`CH`** | سوئیس (Switzerland) | | **`NO`** | نروژ (Norway) |
-> | **`DE`** | آلمان (Germany) | | **`PL`** | لهستان (Poland) |
-> | **`DK`** | دانمارک (Denmark) | | **`SE`** | سوئد (Sweden) |
-> | **`ES`** | اسپانیا (Spain) | | **`SG`** | سنگاپور (Singapore) |
-> | **`FI`** | فنلاند (Finland) | | **`US`** | ایالات متحده (United States) |
-> | **`FR`** | فرانسه (France) | | **`GB`** | بریتانیا (United Kingdom) |
+
+---
+
+### 🌍 راهنمای انتخاب لوکیشن (`TARGET_REGION`)
+
+در خط اول اسکریپت، متغیر `TARGET_REGION` را برابر با کد دو حرفی کشور مورد نظر (با حروف بزرگ) قرار دهید. مقدار `ALL` به معنی اتصال خودکار به سریع‌ترین سرور است.
+
+| کد | نام کشور | کد | نام کشور |
+| --- | --- | --- | --- |
+| **`ALL`** | 🚀 سریع‌ترین سرور | **`IT`** | ایتالیا (Italy) |
+| **`AT`** | اتریش (Austria) | **`JP`** | ژاپن (Japan) |
+| **`BE`** | بلژیک (Belgium) | **`NL`** | هلند (Netherlands) |
+| **`CA`** | کانادا (Canada) | **`NO`** | نروژ (Norway) |
+| **`CH`** | سوئیس (Switzerland) | **`PL`** | لهستان (Poland) |
+| **`DE`** | آلمان (Germany) | **`SE`** | سوئد (Sweden) |
+| **`DK`** | دانمارک (Denmark) | **`SG`** | سنگاپور (Singapore) |
+| **`ES`** | اسپانیا (Spain) | **`US`** | ایالات متحده (United States) |
+| **`FI`** | فنلاند (Finland) | **`GB`** | بریتانیا (United Kingdom) |
+| **`FR`** | فرانسه (France) |  |  |
+
+---
+
+
 
 ```bash
-# 🌍 تعیین کشور خروجی (کد دو حرفی بزرگ یا ALL برای سریع‌ترین سرور)
+
+#!/bin/sh
+
+# 🌍 تعیین کشور خروجی (کد دو حرفی بزرگ یا ALL برای سریعترین سرور)
 TARGET_REGION="ALL"
 
 echo "تنظیم لوکیشن سایفون روی: $TARGET_REGION"
-# تغییر خودکار کشور در فایل کانفیگ اصلاح‌شده (رعایت دقیق حروف کوچک egressRegion)
+# تغییر خودکار کشور در فایل کانفیگ اصلاحشده
 sed -i "s/\"egressRegion\": \".*\"/\"egressRegion\": \"$TARGET_REGION\"/g" /usr/bin/psiphon.config
 
-# ۱. بستن پروسه‌های قدیمی و پاکسازی کامل کش آی‌پی‌های قدیمی جهت رفع انسداد
+# ۱. بستن پروسه‌های قدیمی جهت رفع انسداد و جلوگیری از تداخل پورت‌ها
 killall -9 psiphon-core socat 2>/dev/null
 rm -rf /usr/bin/psiphon_data/*
 
-# ۲. اجرای هسته اصلی سایفون در پس‌زمینه و ذخیره لاگ در حافظه موقت RAM
+# ۲. اجرای آنی هسته اصلی سایفون در پس‌زمینه (با پورت‌های ثابت داخلی ۱۰۸۸۸ و ۱۰۸۸۹)
 /usr/bin/psiphon-core -config /usr/bin/psiphon.config -dataRootDirectory /usr/bin/psiphon_data > /tmp/psiphon.log 2>&1 &
 
-# ۳. صبر برای هندشیک اولیه و دور زدن فیلترینگ شدید (۳۰ ثانیه زمان استاندارد شبکه ایران است)
-echo "در حال تلاش سخت برای عبور از فیلترینگ... لطفا ۳۰ ثانیه کامل صبر کنید..."
-sleep 30
-
-# ۴. استخراج فوق‌العاده دقیق پورت‌های رندوم سایفون از داخل لاگ فایل JSON (انطباق با حروف کوچک در لاگ)
-SOCKS_PORT=$(grep "ListeningSocksProxyPort" /tmp/psiphon.log | grep -o '"port":[0-9]*' | cut -d':' -f2)
-HTTP_PORT=$(grep "ListeningHttpProxyPort" /tmp/psiphon.log | grep -o '"port":[0-9]*' | cut -d':' -f2)
-
-echo "پورت‌های رندوم شناسایی شده از لاگ -> SOCKS: $SOCKS_PORT | HTTP: $HTTP_PORT"
-
-# ۵. تشخیص خودکار آی‌پای داخلی روتر شما (LAN IP)
+# ۳. تشخیص خودکار آی‌پای داخلی روتر شما (LAN IP)
 ROUTER_IP=$(ubus call network.interface.lan status | jsonfilter -e '@["ipv4-address"][0].address')
 echo "آی‌پای تشخیص داده شده روتر شما: $ROUTER_IP"
 
-# ۶. برقراری پل ارتباطی توسط socat به آی‌پای داینامیک روتر (روی پورت‌های ثابت ۱۰۸۰۸ و ۱۰۸۰۹)
-socat TCP-LISTEN:10809,fork,bind=$ROUTER_IP TCP:127.0.0.1:$HTTP_PORT &
-socat TCP-LISTEN:10808,fork,bind=$ROUTER_IP TCP:127.0.0.1:$SOCKS_PORT &
+# ۴. برقراری پل ارتباطی مستقیم و ثابت توسط socat به آی‌پای روتر 
+# پورت‌های خروجی برای دستگاه‌های متصل به وای‌فای روی ۱۰۸۰۸ و ۱۰۸۰۹ ثابت می‌مانند
+socat TCP-LISTEN:10809,fork,bind=$ROUTER_IP TCP:127.0.0.1:10889 &
+socat TCP-LISTEN:10808,fork,bind=$ROUTER_IP TCP:127.0.0.1:10888 &
 
-# ۷. باز کردن فایروال بومی OpenWrt 24.10 (nftables / fw4) جهت قبول دسترسی کلاینت‌ها از شبکه داخلی
+# ۵. باز کردن فایروال بومی OpenWrt (nftables / fw4) جهت قبول دسترسی کلاینت‌ها
 nft add rule inet fw4 input iifname "br-lan" tcp dport 10808-10809 accept 2>/dev/null
 
-echo "سایفون با موفقیت با لوکیشن $TARGET_REGION و پورت‌های ثابت روی شبکه داخلی فعال شد!"
+echo "سایفون با موفقیت با پورتهای کاملاً ثابت و بدون معطلی فعال شد!"
 
 ```
 
