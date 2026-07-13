@@ -9,62 +9,51 @@
 
 این پروژه یک راهنمای جامع و اسکریپت هوشمند برای راه‌اندازی، مدیریت و جفت‌کردن هسته لینوکسی سایفون (`psiphon-core`) با روترهای مبتنی بر **OpenWrt** معماری `aarch64_cortex-a53` و `arm_Cortex-A7 (Google Wifi AC-1304)`
 
-
 ---
 
-## 🛠️ ۱. آموزش کامپایل فایل باینری (روی کامپیوتر)
+## 🛠️ ۱. آموزش کامپایل فایل باینری (روی کامپیوتر)  PowerShell
 برای کامپایل صحیح هسته سایفون، باید خط فرمان خود را به سمت پوشه کلاینت متنی (ConsoleClient) هدایت کنید. کد اصلی و فایل main.go برای اجرای نسخه کلاینت، برخلاف فرض اولیه شما، در ریشه مخزن قرار ندارد و درون این پوشه تعبیه شده است.
 
-اگر می‌خواهید خودتان فایل اجرایی سایفون را برای معماری روتر (` arm7,  arm64`) بسازید، ابتدا مطمئن شوید زبان Go روی کامپیوتر شما نصب است، سپس ترمینال را باز کرده و این دستورات را اجرا کنید:
+اگر می‌خواهید خودتان فایل اجرایی سایفون را برای معماری روتر (` arm7,  arm64`) بسازید، ابتدا مطمئن شوید زبان Go روی کامپیوتر شما نصب است، سپس ترمینال را باز کرده و این دستورات را اجرا کنی
 
-# برای (مدل GLinet MT3000) دارای پردازنده 64 بیتی با معماری ARM64 است.
- 
 ```bash
+
 # برای powersell
 # ۱. دریافت سورس کد رسمی هسته سایفون از مخزن Psiphon-Labs
-git clone https://github.com/Psiphon-Labs/psiphon-tunnel-core.git
+دانلود مستقیم ZIP
+https://github.com/Psiphon-Labs/psiphon-tunnel-core/archive/refs/heads/master.zip
 
 # ۲. ورود به پوشه کلاینت متنی (کد کلاینت اصلی در این مسیر است)
 cd psiphon-tunnel-core/ConsoleClient
 
-# ۳. رفع تحریم دانلود پکیج‌های گالنگ در ویندوز (برای جلوگیری از خطای ۴۰۳)
+فایل اطلاعات سرور را به این پوشه منتقل کنید embedded_servers.go
+C:\....\psiphon-tunnel-core-master\ConsoleClient
+
+# ۳. رفع تحریم دانلود پکیج‌های گالنگ در ویندوز (برای جلوگیری از خطای ۴۰۳)اگر نیاز بود
 go env -w GOPROXY="https://goproxy.cn,direct"
 
 # ۴. دانلود وابستگی‌های پروژه
 go mod download
 
-# ۵. تنظیم متغیرهای محیطی برای لینوکس ۶۴ بیتی ARM در پاورشل
+```
+
+
+# برای (مدل GLinet MT3000) دارای پردازنده 64 بیتی با معماری ARM64 است.
+```bash
+
 $env:GOOS="linux"
 $env:GOARCH="arm64"
-
-# ۶. کامپایل فوق‌العاده بهینه، بدون دباگ و سبک برای روتر
-go build -ldflags="-s -w" -o psiphon-core .
-
+go build -o psiphon-core
 
 ```
 # برای  Google Wifi (مدل AC-1304) دارای پردازنده 32 بیتی با معماری ARMv7 است،
  
 ```bash
-# برای powershell
-# ۱. دریافت سورس کد رسمی هسته سایفون از مخزن Psiphon-Labs
-git clone https://github.com/Psiphon-Labs/psiphon-tunnel-core.git
 
-# ۲. ورود به پوشه کلاینت متنی (فایل کلاینت اصلی در این مسیر است)
-cd psiphon-tunnel-core/ConsoleClient
-
-# ۳. رفع خطای ۴۰۳ و تحریم دانلود وابستگی‌ها در ویندوز
-go env -w GOPROXY="https://goproxy.cn,direct"
-
-# ۴. دانلود پکیج‌ها و وابستگی‌های پروژه
-go mod download
-
-# ۵. تنظیم متغیرهای محیطی برای لینوکس ۳۲ بیتی ARM (گوگل وای‌فای AC-1304) در پاورشل
 $env:GOOS="linux"
 $env:GOARCH="arm"
 $env:GOARM="7"
-
-# ۶. کامپایل فوق‌العاده بهینه، بدون دباگ و سبک برای روتر
-go build -ldflags="-s -w" -o psiphon-core .
+go build -o psiphon-core
 
 ```
 
