@@ -59,13 +59,14 @@ apk -U add socat curl wget-ssl coreutils-nohup
 
 ```bash
 
-# ۱. ساخت پوشه‌های مورد نیاز سیستم در صورت عدم وجود
+
+# ۱. ساخت پوشههای مورد نیاز سیستم در صورت عدم وجود
 mkdir -p /www/luci-static/resources/view/services
 mkdir -p /usr/share/luci/menu.d
 mkdir -p /usr/share/rpcd/acl.d
 mkdir -p /etc/config
 
-# ۲. ایجاد فایل تنظیمات پیش‌فرض سایفون
+# ۲. ایجاد فایل تنظیمات پیشفرض سایفون
 cat << 'EOF' > /etc/config/psiphon
 config psiphon 'config'
 	option enabled '0'
@@ -86,11 +87,11 @@ cat << 'EOF' > /www/luci-static/resources/view/services/psiphon.js
 'require poll';
 
 return L.view.extend({
-	// متغیر کمکی برای ذخیره آی‌پی روتر
+	// متغیر کمکی برای ذخیره آیپی روتر
 	router_ip: '192.168.8.1',
 
 	load: function() {
-		// واکشی خودکار آی‌پی محلی (LAN) روتر از uci قبل از رندر صفحه
+		// واکشی خودکار آیپی محلی (LAN) روتر از uci قبل از رندر صفحه
 		return L.uci.load('network').then(L.bind(function() {
 			var ip = L.uci.get('network', 'lan', 'ipaddr');
 			if (ip) {
@@ -106,7 +107,7 @@ return L.view.extend({
 		s.addremove = false;
 		
 		// ==========================================
-		// بخش ۱: داشبورد مانیتورینگ آی‌پی
+		// بخش ۱: داشبورد مانیتورینگ آیپی
 		// ==========================================
 		let o = s.option(L.form.DummyValue, '_ip_box');
 		o.rawhtml = true;
@@ -114,7 +115,7 @@ return L.view.extend({
 			return E('div', { 'class': 'cbi-value', 'style': 'margin-bottom: 20px;' }, [
 				E('div', { 'style': 'display: flex; flex-flow: row wrap; align-items: center; justify-content: space-between; background: #1a1c20; padding: 12px 20px; border-radius: 8px; border: 1px solid #333; box-shadow: 0 4px 6px rgba(0,0,0,0.3); width: 100%; gap: 15px;' }, [
 					
-					// بخش آی‌پی اصلی
+					// بخش آیپی اصلی
 					E('div', { 'style': 'display: flex; align-items: center; gap: 8px;' }, [
 						E('span', { 'style': 'color: #88a; font-size: 13px; text-transform: uppercase; font-weight: bold;' }, _('🔴 Real IP:')),
 						E('span', { 'id': 'real_ip_display', 'style': 'font-size: 14px; color: #ccc; font-family: monospace;' }, _('⏳ Checking...'))
@@ -123,7 +124,7 @@ return L.view.extend({
 					// خط جداکننده وسط
 					E('div', { 'style': 'width: 1px; height: 24px; background-color: #444; display: inline-block;' }, ''),
 
-					// بخش آی‌پی سایفون
+					// بخش آیپی سایفون
 					E('div', { 'style': 'display: flex; align-items: center; gap: 8px; flex: 1;' }, [
 						E('span', { 'style': 'color: #88a; font-size: 13px; text-transform: uppercase; font-weight: bold;' }, _('🟢 Psiphon IP:')),
 						E('span', { 'id': 'vpn_ip_display', 'style': 'font-size: 14px; color: #00ff66; font-family: monospace;' }, _('⏳ Checking...'))
@@ -243,7 +244,7 @@ return L.view.extend({
 		};
 
 		// ==========================================
-		// بخش ۳: تنظیمات عمومی و پورت‌ها
+		// بخش ۳: تنظیمات عمومی و پورتها
 		// ==========================================
 		o = s.option(L.form.Flag, 'enabled', _('Enable'));
 		o.rmempty = false;
@@ -276,7 +277,7 @@ return L.view.extend({
 		o.value('SSH', _('SSH'));
 		o.default = 'STANDARD';
 
-		// پورت SOCKS با قابلیت تولید خودکار توضیحات بر اساس آی‌پی روتر
+		// پورت SOCKS با قابلیت تولید خودکار توضیحات بر اساس آیپی روتر
 		const socksOpt = s.option(L.form.Value, 'socks_port', _('SOCKS Port'));
 		socksOpt.datatype = 'port';
 		socksOpt.default = '10808';
@@ -286,7 +287,7 @@ return L.view.extend({
 			return L.form.Value.prototype.write.call(this, section_id, value);
 		};
 
-		// پورت HTTP با قابلیت تولید خودکار توضیحات بر اساس آی‌پی روتر
+		// پورت HTTP با قابلیت تولید خودکار توضیحات بر اساس آیپی روتر
 		const httpOpt = s.option(L.form.Value, 'http_port', _('HTTP Port'));
 		httpOpt.datatype = 'port';
 		httpOpt.default = '10809';
@@ -297,7 +298,7 @@ return L.view.extend({
 		};
 
 		// ==========================================
-		// بخش ۴: مدیریت لاگ‌ها (دکمه کش حذف شد)
+		// بخش ۴: مدیریت لاگها (دکمه کش حذف شد)
 		// ==========================================
 		o = s.option(L.form.Button, '_clear_log', _('Log Actions'));
 		o.inputtitle = _('Clear Log Screen');
@@ -315,7 +316,7 @@ return L.view.extend({
 		o.rawhtml = true;
 		o.render = function() {
 			return E('div', { 'class': 'cbi-value' }, [
-				E('label', { 'class': 'cbi-value-title' }, _('Terminal / Logs')),
+				E('label', { 'class': 'cbi-value-title' }, _('Logs')),
 				E('div', { 'class': 'cbi-value-field', 'style': 'width: 100%; box-sizing: border-box;' }, [
 					
 					// کادر لاگ
@@ -324,6 +325,7 @@ return L.view.extend({
 						'style': 'width: 100%; height: 260px; font-family: monospace; font-size: 12px; background: #111; color: #00ff66; padding: 10px; border-radius: 4px; border: 1px solid #222; resize: none; line-height: 1.6; box-sizing: border-box; margin-bottom: 15px;', 
 						'readonly': 'readonly' 
 					}, _('Waiting for log stream...')),
+				E('label', { 'class': 'cbi-value-title' }, _('Terminal')),
 
 					// کادر ترمینال
 					E('textarea', { 
@@ -362,7 +364,7 @@ return L.view.extend({
 			]);
 		};
 
-		// تابع هوشمند فیلتر و رندر لاگ‌ها
+		// تابع هوشمند فیلتر و رندر لاگها
 		function fetchLog() {
 			const logArea = document.getElementById('psiphon_live_log');
 			if (!logArea) return; 
@@ -407,7 +409,7 @@ return L.view.extend({
 			});
 		}
 
-		// راه‌اندازی تسک‌های خودکار و زمان‌بندی زنده LuCI Poll API
+		// راهاندازی تسکهای خودکار و زمانبندی زنده LuCI Poll API
 		L.Poll.add(function() {
 			return Promise.all([
 				fetchLog()
@@ -470,17 +472,18 @@ cat << 'EOF' > /usr/share/rpcd/acl.d/luci-app-psiphon.json
 }
 EOF
 
-# ۶. تنظیم دقیق پرمیشن‌ها و سطوح دسترسی تمامی فایل‌ها
+# ۶. تنظیم دقیق پرمیشنها و سطوح دسترسی تمامی فایلها
 chmod 644 /etc/config/psiphon
 chmod 644 /www/luci-static/resources/view/services/psiphon.js
 chmod 644 /usr/share/luci/menu.d/luci-app-psiphon.json
 chmod 644 /usr/share/rpcd/acl.d/luci-app-psiphon.json
 
-# ۷. راه اندازی مجدد RPC سیستم و پاکسازی تمام کش‌های LuCI برای رندر مجدد
+# ۷. راه اندازی مجدد RPC سیستم و پاکسازی تمام کشهای LuCI برای رندر مجدد
 /etc/init.d/rpcd restart
 rm -rf /tmp/luci-indexcache /tmp/luci-modulecache
 
 echo "Psiphon panel updated successfully! Please hard refresh your browser (Ctrl+F5)."
+
 
 
 ```
