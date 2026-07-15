@@ -21,13 +21,13 @@ cd psiphon-tunnel-core/ConsoleClient
 # کامپایل برای روترهای ۶۴ بیتی (Aarch64 / ARM64 مانند GL.iNet MT3000 / MT2500)
 $env:GOOS="linux"
 $env:GOARCH="arm64"
-go build -ldflags="-s -w" -o psiphon-core main.go
+go build -o psiphon-core main.go
 
 # کامپایل برای روترهای ۳۲ بیتی (ARMv7 مانند Google Wifi AC-1304)
 $env:GOOS="linux"
 $env:GOARCH="arm"
 $env:GOARM="7"
-go build -ldflags="-s -w" -o psiphon-core main.go
+go build -o psiphon-core main.go
 
 
 ```
